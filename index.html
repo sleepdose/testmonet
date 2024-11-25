@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Баланс и персонаж</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            text-align: center;
+        }
+        header {
+            background-color: #4CAF50; /* Зеленый цвет */
+            color: white;
+            padding: 10px 0;
+        }
+        h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+        #balance {
+            font-size: 20px;
+            margin: 15px 0;
+        }
+        #character {
+            width: 150px; /* Ширина персонажа */
+            cursor: pointer; /* Указатель курсора при наведении */
+            transition: transform 0.3s;
+        }
+        #character:hover {
+            transform: scale(1.1); /* Увеличение персонажа при наведении */
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Собери монеты!</h1>
+</header>
+
+<div id="balance">Баланс: 0 монет</div>
+<img id="character" src="https://img.icons8.com/emoji/480/coin-emoji.png" alt="Персонаж" />
+
+<script>
+    let balance = 0;
+
+    // Функция для обновления баланса
+    function updateBalance() {
+        balance++;
+        document.getElementById('balance').innerText = 'Баланс: ' + balance + ' монет';
+    }
+
+    // Обработчик клика на персонажа
+    document.getElementById('character').addEventListener('click', updateBalance);
+</script>
+
+</body>
+</html>
