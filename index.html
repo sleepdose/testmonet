@@ -21,7 +21,7 @@
             font-size: 24px;
             margin: 0;
         }
-        #balance, #energy {
+        #energy, #balance {
             font-size: 20px;
             margin: 15px 0;
         }
@@ -30,13 +30,9 @@
             cursor: pointer; /* Указатель курсора при наведении */
             transition: transform 0.1s; /* Плавный переход */
             position: relative; /* Относительное позиционирование */
-            top: 50%; /* Для вертикального центрирования */
-            transform: translateY(-50%); /* Для окончательного корректировочного центрирования */
+            transform: translateY(0); /* Центрируем монетку под подписями */
         }
-        .active {
-            transform: scale(0.9); /* Уменьшение при нажатии */
-        }
-        #upgrade-button, #open-upgrades {
+        #upgrade-button, #open-upgrades, #use-energy {
             padding: 10px 20px;
             background-color: #4CAF50;
             color: white;
@@ -44,8 +40,7 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 18px;
-            margin-top: 10px; /* Уменьшаем расстояние между кнопками */
-            margin-bottom: 10px; /* Уменьшаем расстояние между кнопками */
+            margin: 10px 0; /* Уменьшаем расстояние между кнопками */
             width: 150px; /* Установим одинаковую ширину кнопок */
         }
         #upgrade-window {
@@ -74,19 +69,22 @@
     <h1>Собери монеты!</h1>
 </header>
 
-<div id="energy">Энергия: 1000</div>
 <div id="balance">Баланс: 0 монет</div>
-<div style="display: flex; justify-content: center; align-items: center; height: calc(100vh - 200px);">
+<div id="energy">Энергия: 1000 / 1000</div>
+<div style="display: flex; justify-content: center; align-items: center; height: calc(100vh - 500px);">
     <img id="character" src="https://img.icons8.com/emoji/480/coin-emoji.png" alt="Персонаж" />
 </div>
 
 <button id="open-upgrades">Персонаж</button>
 <div id="upgrade-window">
+    <h2>Бесплатный ежедневный усилитель</h2>
+    <p>Осталось: <span id="daily-uses">3 / 3</span></p>
+    <button id="use-energy">Использовать</button>
     <h2>Улучшения</h2>
     <p>Доход за клик (Уровень: <span id="click-upgrade-level">1</span>) (100 монет)</p>
-    <button id="upgrade-button">Купить</button>
+    <button id="upgrade-button">Улучшить</button>
     <p>Запас энергии (Уровень: <span id="energy-upgrade-level">1</span>) (50 монет)</p>
-    <button id="buy-energy-upgrade">Купить</button>
+    <button id="buy-energy-upgrade">Улучшить</button>
     <br><br>
     <button id="close-upgrades">Закрыть</button>
 </div>
@@ -95,27 +93,43 @@
     let balance = 0;  // Текущий баланс
     let coinsPerClick = 1;  // Монеты за клик
     let energy = 1000;  // Текущая энергия
+    let maxEnergy = 1000; // Максимальная энергия
+    let dailyUses = 3; // Осталось использований для пополнения
     const upgradeCost = 100;  // Стоимость улучшения клика
     const energyUpgradeCost = 50; // Стоимость улучшения энергии
     let clickUpgradeLevel = 1; // Уровень улучшения клика
     let energyUpgradeLevel = 1; // Уровень улучшения энергии
+
+    function updateEnergyDisplay() {
+        document.getElementById('energy').innerText = 'Энергия: ' + energy + ' / ' + maxEnergy;
+        document.getElementById('daily-uses').innerText = dailyUses + ' / 3'; // Обновляем количество использований
+    }
 
     function updateBalance() {
         if (energy > 0) {
             balance += coinsPerClick;
             energy--;  // Расход энергии на клик
             document.getElementById('balance').innerText = 'Баланс: ' + balance + ' монет';
-            document.getElementById('energy').innerText = 'Энергия: ' + energy;
+            updateEnergyDisplay(); // Обновляем отображение энергии
         } else {
             alert('Недостаточно энергии!');
         }
     }
 
+    function restoreEnergy() {
+        if (energy < maxEnergy) {
+            energy++;
+            updateEnergyDisplay(); // Обновляем отображение энергии
+        }
+    }
+
+    setInterval(restoreEnergy, 2000); // Восстанавливает энергию каждые 2 секунды
+
     const character = document.getElementById('character');
     character.addEventListener('click', function() {
         updateBalance();
-        character.classList.add('active');  // Добавляем класс активного состояния
-        setTimeout(() => character.classList.remove('active'), 100); // Убираем класс через 100 мс
+        character.style.transform = 'translateY(-10px)'; // Эффект подпрыгивания
+        setTimeout(() => { character.style.transform = 'translateY(0)'; }, 100); // Возвращаем позицию
     });
 
     document.getElementById('open-upgrades').addEventListener('click', function() {
@@ -133,6 +147,7 @@
             clickUpgradeLevel++;
             document.getElementById('click-upgrade-level').innerText = clickUpgradeLevel;
             document.getElementById('balance').innerText = 'Баланс: ' + balance + ' монет';
+            document.getElementById('upgrade-window').style.display = 'none';  // Закрыть окно после покупки
         } else if (clickUpgradeLevel >= 10) {
             alert('Вы достигли максимального уровня улучшения!');
         } else {
@@ -143,16 +158,32 @@
     document.getElementById('buy-energy-upgrade').addEventListener('click', function() {
         if (balance >= energyUpgradeCost && energyUpgradeLevel < 10) {
             balance -= energyUpgradeCost;
-            energy += 5;  // Увеличиваем энергию
+            maxEnergy += 100;  // Увеличиваем максимальную энергию на 100
+            energy += 5;  // Увеличиваем текущую энергию
             energyUpgradeLevel++;
             document.getElementById('energy-upgrade-level').innerText = energyUpgradeLevel;
             document.getElementById('balance').innerText = 'Баланс: ' + balance + ' монет';
+            updateEnergyDisplay(); // Обновляем отображение энергии
+            document.getElementById('upgrade-window').style.display = 'none';  // Закрыть окно после покупки
         } else if (energyUpgradeLevel >= 10) {
             alert('Вы достигли максимального уровня улучшения энергии!');
         } else {
             alert('Недостаточно монет для покупки улучшения энергии!');
         }
     });
+
+    // Функция для использования ежедневного пополнения энергии
+    document.getElementById('use-energy').addEventListener('click', function() {
+        if (dailyUses > 0) {
+            energy = maxEnergy; // Восстанавливаем до максимума
+            dailyUses--; // Уменьшаем количество оставшихся использований
+            updateEnergyDisplay(); // Обновляем отображение энергии
+        } else {
+            alert('Нет доступных использований!');
+        }
+    });
+
+    updateEnergyDisplay(); // Изначально обновляем отображение энергии
 </script>
 </body>
 </html>
