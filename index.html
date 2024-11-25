@@ -13,7 +13,7 @@
             text-align: center;
         }
         header {
-            background-color: #4CAF50; / Зеленый цвет /
+            background-color: #4CAF50; /* Зеленый цвет */
             color: white;
             padding: 10px 0;
         }
@@ -26,12 +26,12 @@
             margin: 15px 0;
         }
         #character {
-            width: 150px; / Ширина персонажа /
-            cursor: pointer; / Указатель курсора при наведении /
-            transition: transform 0.1s; / Плавный переход /
+            width: 150px; /* Ширина персонажа */
+            cursor: pointer; /* Указатель курсора при наведении */
+            transition: transform 0.1s; /* Плавный переход */
         }
-        #character:active {
-            transform: scale(0.9); / Уменьшение при нажатии /
+        .active {
+            transform: scale(0.9); /* Уменьшение при нажатии */
         }
     </style>
 </head>
@@ -53,8 +53,24 @@
         document.getElementById('balance').innerText = 'Баланс: ' + balance + ' монет';
     }
 
+    // Получаем элемент персонажа
+    const character = document.getElementById('character');
+
     // Обработчик клика на персонажа
-    document.getElementById('character').addEventListener('click', updateBalance);
+    character.addEventListener('click', function() {
+        updateBalance();
+        character.classList.add('active'); // Добавляем класс активного состояния
+        setTimeout(() => character.classList.remove('active'), 100); // Убираем класс через 100 мс
+    });
+
+    // Обработка нажатия на мобильных устройствах
+    character.addEventListener('touchstart', function() {
+        character.classList.add('active');
+    });
+    
+    character.addEventListener('touchend', function() {
+        setTimeout(() => character.classList.remove('active'), 100);
+    });
 </script>
 
 </body>
