@@ -44,7 +44,9 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 18px;
-            margin-top: 20px;
+            margin-top: 10px; /* Уменьшаем расстояние между кнопками */
+            margin-bottom: 10px; /* Уменьшаем расстояние между кнопками */
+            width: 150px; /* Установим одинаковую ширину кнопок */
         }
         #upgrade-window {
             display: none;
@@ -72,8 +74,8 @@
     <h1>Собери монеты!</h1>
 </header>
 
-<div id="balance">Баланс: 0 монет</div>
 <div id="energy">Энергия: 1000</div>
+<div id="balance">Баланс: 0 монет</div>
 <div style="display: flex; justify-content: center; align-items: center; height: calc(100vh - 200px);">
     <img id="character" src="https://img.icons8.com/emoji/480/coin-emoji.png" alt="Персонаж" />
 </div>
