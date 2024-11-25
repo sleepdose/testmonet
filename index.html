@@ -13,7 +13,7 @@
             text-align: center;
         }
         header {
-            background-color: #4CAF50; /* Зеленый цвет */
+            background-color: #4CAF50; / Зеленый цвет /
             color: white;
             padding: 10px 0;
         }
@@ -26,12 +26,15 @@
             margin: 15px 0;
         }
         #character {
-            width: 150px; /* Ширина персонажа */
-            cursor: pointer; /* Указатель курсора при наведении */
-            transition: transform 0.1s; /* Плавный переход */
+            width: 150px; / Ширина персонажа /
+            cursor: pointer; / Указатель курсора при наведении /
+            transition: transform 0.1s; / Плавный переход /
+         position: relative; / Относительное позиционирование /
+         top: 50%; / Для вертикального центрирования /
+         transform: translateY(-50%); / Для окончательного корректировочного центрирования /
         }
         .active {
-            transform: scale(0.9); /* Уменьшение при нажатии */
+            transform: scale(0.9); / Уменьшение при нажатии /
         }
         #upgrade-button, #open-upgrades {
             padding: 10px 20px;
@@ -70,26 +73,27 @@
 </header>
 
 <div id="balance">Баланс: 0 монет</div>
-<div id="energy">Энергия: 10</div>
+<div id="energy">Энергия: 1000</div>
 <div id="upgrade-info">Улучшение: 1 монета за клик</div>
-<img id="character" src="https://img.icons8.com/emoji/480/coin-emoji.png" alt="Персонаж" />
+<div style="display: flex; justify-content: center; align-items: center; height: calc(100vh - 200px);">
+    <img id="character" src="https://img.icons8.com/emoji/480/coin-emoji.png" alt="Персонаж" />
+</div>
 
 <button id="open-upgrades">Открыть улучшения</button>
-
 <div id="upgrade-window">
     <h2>Улучшения</h2>
+    <p>Купить улучшение клика (100 монет)</p>
+    <button id="upgrade-button">Купить</button>
     <p>Купить улучшение энергии (50 монет)</p>
     <button id="buy-energy-upgrade">Купить</button>
     <br><br>
     <button id="close-upgrades">Закрыть</button>
 </div>
 
-<button id="upgrade-button">Купить улучшение (100 монет)</button>
-
 <script>
     let balance = 0;  // Текущий баланс
     let coinsPerClick = 1;  // Монеты за клик
-    let energy = 10;  // Текущая энергия
+    let energy = 1000;  // Текущая энергия
     const upgradeCost = 100;  // Стоимость улучшения клика
     const energyUpgradeCost = 50; // Стоимость улучшения энергии
 
@@ -105,7 +109,6 @@
     }
 
     const character = document.getElementById('character');
-
     character.addEventListener('click', function() {
         updateBalance();
         character.classList.add('active');  // Добавляем класс активного состояния
@@ -141,8 +144,6 @@
             alert('Недостаточно монет для покупки улучшения энергии!');
         }
     });
-
 </script>
-
 </body>
 </html>
