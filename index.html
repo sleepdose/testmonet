@@ -13,7 +13,7 @@
             text-align: center;
         }
         header {
-            background-color: #4CAF50; / Зеленый цвет /
+            background-color: #4CAF50; /* Зеленый цвет */
             color: white;
             padding: 10px 0;
         }
@@ -26,15 +26,15 @@
             margin: 15px 0;
         }
         #character {
-            width: 150px; / Ширина персонажа /
-            cursor: pointer; / Указатель курсора при наведении /
-            transition: transform 0.1s; / Плавный переход /
-         position: relative; / Относительное позиционирование /
-         top: 50%; / Для вертикального центрирования /
-         transform: translateY(-50%); / Для окончательного корректировочного центрирования /
+            width: 150px; /* Ширина персонажа */
+            cursor: pointer; /* Указатель курсора при наведении */
+            transition: transform 0.1s; /* Плавный переход */
+            position: relative; /* Относительное позиционирование */
+            top: 50%; /* Для вертикального центрирования */
+            transform: translateY(-50%); /* Для окончательного корректировочного центрирования */
         }
         .active {
-            transform: scale(0.9); / Уменьшение при нажатии /
+            transform: scale(0.9); /* Уменьшение при нажатии */
         }
         #upgrade-button, #open-upgrades {
             padding: 10px 20px;
@@ -81,4 +81,76 @@
 <button id="open-upgrades">Персонаж</button>
 <div id="upgrade-window">
     <h2>Улучшения</h2>
-    <p>Доход за клик (Уровень:
+    <p>Доход за клик (Уровень: <span id="click-upgrade-level">1</span>) (100 монет)</p>
+    <button id="upgrade-button">Купить</button>
+    <p>Запас энергии (Уровень: <span id="energy-upgrade-level">1</span>) (50 монет)</p>
+    <button id="buy-energy-upgrade">Купить</button>
+    <br><br>
+    <button id="close-upgrades">Закрыть</button>
+</div>
+
+<script>
+    let balance = 0;  // Текущий баланс
+    let coinsPerClick = 1;  // Монеты за клик
+    let energy = 1000;  // Текущая энергия
+    const upgradeCost = 100;  // Стоимость улучшения клика
+    const energyUpgradeCost = 50; // Стоимость улучшения энергии
+    let clickUpgradeLevel = 1; // Уровень улучшения клика
+    let energyUpgradeLevel = 1; // Уровень улучшения энергии
+
+    function updateBalance() {
+        if (energy > 0) {
+            balance += coinsPerClick;
+            energy--;  // Расход энергии на клик
+            document.getElementById('balance').innerText = 'Баланс: ' + balance + ' монет';
+            document.getElementById('energy').innerText = 'Энергия: ' + energy;
+        } else {
+            alert('Недостаточно энергии!');
+        }
+    }
+
+    const character = document.getElementById('character');
+    character.addEventListener('click', function() {
+        updateBalance();
+        character.classList.add('active');  // Добавляем класс активного состояния
+        setTimeout(() => character.classList.remove('active'), 100); // Убираем класс через 100 мс
+    });
+
+    document.getElementById('open-upgrades').addEventListener('click', function() {
+        document.getElementById('upgrade-window').style.display = 'block';  // Открыть окно улучшений
+    });
+
+    document.getElementById('close-upgrades').addEventListener('click', function() {
+        document.getElementById('upgrade-window').style.display = 'none';  // Закрыть окно улучшений
+    });
+
+    document.getElementById('upgrade-button').addEventListener('click', function() {
+        if (balance >= upgradeCost && clickUpgradeLevel < 10) {
+            balance -= upgradeCost;
+            coinsPerClick++;
+            clickUpgradeLevel++;
+            document.getElementById('click-upgrade-level').innerText = clickUpgradeLevel;
+            document.getElementById('balance').innerText = 'Баланс: ' + balance + ' монет';
+        } else if (clickUpgradeLevel >= 10) {
+            alert('Вы достигли максимального уровня улучшения!');
+        } else {
+            alert('Недостаточно монет для покупки улучшения!');
+        }
+    });
+
+    document.getElementById('buy-energy-upgrade').addEventListener('click', function() {
+        if (balance >= energyUpgradeCost && energyUpgradeLevel < 10) {
+            balance -= energyUpgradeCost;
+            energy += 5;  // Увеличиваем энергию
+            energyUpgradeLevel++;
+            document.getElementById('energy-upgrade-level').innerText = energyUpgradeLevel;
+            document.getElementById('balance').innerText = 'Баланс: ' + balance + ' монет';
+        } else if (energyUpgradeLevel >= 10) {
+            alert('Вы достигли максимального уровня улучшения энергии!');
+        } else {
+            alert('Недостаточно монет для покупки улучшения энергии!');
+        }
+    });
+</script>
+</body>
+</html>
