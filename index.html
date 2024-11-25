@@ -46,10 +46,10 @@
         #click-effect {
             position: absolute;
             pointer-events: none;
-            font-size: 16px; /* Уменьшен размер шрифта */
-            color: rgba(255, 255, 255, 0.7); /* Белый цвет с прозрачностью */
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
             display: none;
-            transition: transform 0.5s ease, opacity 0.5s ease; /* Изменение прозрачности и перемещение */
+            transition: transform 0.5s ease, opacity 0.5s ease;
         }
         button {
             background-color: #007bff;
@@ -60,9 +60,11 @@
             cursor: pointer;
             margin-top: 10px;
             font-size: 18px;
-            display: block; /* Выравнивание по центру */
-            width: 100%; /* Полная ширина */
-            text-align: center; /* Центрирование текста */
+            width: auto;
+            display: block;
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
         }
         button:hover {
             background-color: #0056b3;
@@ -80,14 +82,12 @@
         <h2 style="text-align: center;">Бесплатный ежедневный усилитель</h2>
         <p style="text-align: center;">Осталось: <span id="daily-uses">3 / 3</span></p>
         <button id="use-energy">Использовать</button>
-        
         <h2 style="text-align: center;">Улучшения</h2>
-        <p style="text-align: center;">Доход за клик (Уровень: <span id="click-upgrade-level">1</span>) (100 монет)</p>
+        <p style="text-align: center;">Доход за клик (Уровень: <span id="click-upgrade-level">1</span>) (Цена: <span id="click-upgrade-cost">100</span> монет)</p>
         <button id="upgrade-button">Улучшить</button>
-        <p style="text-align: center;">Запас энергии (Уровень: <span id="energy-upgrade-level">1</span>) (50 монет)</p>
+        <p style="text-align: center;">Запас энергии (Уровень: <span id="energy-upgrade-level">1</span>) (Цена: <span id="energy-upgrade-cost">50</span> монет)</p>
         <button id="buy-energy-upgrade">Улучшить</button>
-        
-        <button id="close-upgrades">Закрыть</button> <!-- Кнопка закрыть перемещена вниз -->
+        <button id="close-upgrades">Закрыть</button>
     </div>
     <div id="click-effect">+1</div>
     <audio id="click-sound" src="click.mp3" preload="auto"></audio>
@@ -98,17 +98,18 @@
         let energy = 1000;
         let maxEnergy = 1000;
         let dailyUses = 3;
-        const upgradeCost = 100;
-        const energyUpgradeCost = 50;
         let clickUpgradeLevel = 1;
         let energyUpgradeLevel = 1;
-        
-        function updateEnergyDisplay() {
+
+        const calculateClickUpgradeCost = () => 100 * Math.pow(1.5, clickUpgradeLevel - 1);
+        const calculateEnergyUpgradeCost = () => 50 * Math.pow(1.5, energyUpgradeLevel - 1);
+
+        const updateEnergyDisplay = () => {
             document.getElementById('energy').innerText = energy + ' / ' + maxEnergy;
             document.getElementById('daily-uses').innerText = dailyUses + ' / 3';
-        }
-        
-        function updateBalance() {
+        };
+
+        const updateBalance = () => {
             if (energy > 0) {
                 balance += coinsPerClick;
                 energy--;
@@ -117,14 +118,14 @@
             } else {
                 alert('Недостаточно энергии!');
             }
-        }
+        };
 
-        function restoreEnergy() {
+        const restoreEnergy = () => {
             if (energy < maxEnergy) {
                 energy++;
                 updateEnergyDisplay();
             }
-        }
+        };
 
         setInterval(restoreEnergy, 2000);
 
@@ -132,29 +133,21 @@
         character.addEventListener('click', function (event) {
             const clickSound = document.getElementById('click-sound');
             clickSound.play();
-            // Обновление баланса
             updateBalance();
-            // Создание эффекта прибавления
             const effect = document.getElementById('click-effect');
             effect.style.left = `${event.clientX}px`;
             effect.style.top = `${event.clientY}px`;
-            effect.style.display = 'block'; // Делаем эффект видимым
-            effect.style.fontSize = '16px'; // При необходимости уменьшите
-            effect.style.opacity = '1'; // Сбрасываем непрозрачность
-            setTimeout(() => {
-                effect.style.opacity = '0'; // Уменьшаем непрозрачность
-            }, 0); // Запускаем анимацию сразу
-            setTimeout(() => {
-                effect.style.display = 'none'; // Скрываем эффект через 0.5 секунды
-            }, 500);
-            effect.style.transform = 'translate(-50%, -50%) translateY(-10px)'; // Перемещение вверх
-            setTimeout(() => {
-                effect.style.transform = 'translate(-50%, -50%)'; // Возвращаем эффект
-            }, 500);
+            effect.style.display = 'block';
+            effect.style.fontSize = '16px';
+            effect.style.opacity = '1';
+            setTimeout(() => { effect.style.opacity = '0'; }, 0);
+            setTimeout(() => { effect.style.display = 'none'; }, 500);
         });
 
         document.getElementById('open-upgrades').addEventListener('click', function () {
             document.getElementById('upgrade-window').style.display = 'block';
+            document.getElementById('click-upgrade-cost').innerText = calculateClickUpgradeCost();
+            document.getElementById('energy-upgrade-cost').innerText = calculateEnergyUpgradeCost();
         });
 
         document.getElementById('close-upgrades').addEventListener('click', function () {
@@ -163,33 +156,35 @@
 
         document.getElementById('upgrade-button').addEventListener('click', function () {
             const upgradeSound = document.getElementById('upgrade-sound');
-            if (balance >= upgradeCost && clickUpgradeLevel < 10) {
+            const clickUpgradeCost = calculateClickUpgradeCost();
+
+            if (balance >= clickUpgradeCost) {
                 upgradeSound.play();
-                balance -= upgradeCost;
+                balance -= clickUpgradeCost;
                 coinsPerClick++;
                 clickUpgradeLevel++;
                 document.getElementById('click-upgrade-level').innerText = clickUpgradeLevel;
                 document.getElementById('balance').innerText = balance;
-                document.getElementById('upgrade-window').style.display = 'none'; // Закрытие окна
-            } else if (clickUpgradeLevel >= 10) {
-                alert('Вы достигли максимального уровня улучшения!');
+                document.getElementById('click-upgrade-cost').innerText = calculateClickUpgradeCost();
+                document.getElementById('upgrade-window').style.display = 'none';
             } else {
                 alert('Недостаточно монет для покупки улучшения!');
             }
         });
 
         document.getElementById('buy-energy-upgrade').addEventListener('click', function () {
-            if (balance >= energyUpgradeCost && energyUpgradeLevel < 10) {
+            const energyUpgradeCost = calculateEnergyUpgradeCost();
+
+            if (balance >= energyUpgradeCost) {
                 balance -= energyUpgradeCost;
                 maxEnergy += 100;
-                energy += 5;
+                energy = Math.min(energy + 5, maxEnergy); // Обновляем уровень энергии
                 energyUpgradeLevel++;
                 document.getElementById('energy-upgrade-level').innerText = energyUpgradeLevel;
                 document.getElementById('balance').innerText = balance;
                 updateEnergyDisplay();
+                document.getElementById('energy-upgrade-cost').innerText = calculateEnergyUpgradeCost();
                 document.getElementById('upgrade-window').style.display = 'none'; // Закрытие окна
-            } else if (energyUpgradeLevel >= 10) {
-                alert('Вы достигли максимального уровня улучшения энергии!');
             } else {
                 alert('Недостаточно монет для покупки улучшения энергии!');
             }
