@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Баланс и персонаж</title>
+    <title>Баланс и улучшения</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -21,7 +21,7 @@
             font-size: 24px;
             margin: 0;
         }
-        #balance {
+        #balance, #upgrade-info {
             font-size: 20px;
             margin: 15px 0;
         }
@@ -33,6 +33,16 @@
         .active {
             transform: scale(0.9); /* Уменьшение при нажатии */
         }
+        #upgrade-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -42,34 +52,46 @@
 </header>
 
 <div id="balance">Баланс: 0 монет</div>
+<div id="upgrade-info">Улучшение: 1 монета за клик</div>
 <img id="character" src="https://img.icons8.com/emoji/480/coin-emoji.png" alt="Персонаж" />
+
+<button id="upgrade-button">Купить улучшение (100 монет)</button>
 
 <script>
     let balance = 0;
+    let coinsPerClick = 1;
+    const upgradeCost = 100;
 
-    // Функция для обновления баланса
     function updateBalance() {
-        balance++;
+        balance += coinsPerClick;
         document.getElementById('balance').innerText = 'Баланс: ' + balance + ' монет';
     }
 
-    // Получаем элемент персонажа
     const character = document.getElementById('character');
 
-    // Обработчик клика на персонажа
     character.addEventListener('click', function() {
         updateBalance();
         character.classList.add('active'); // Добавляем класс активного состояния
         setTimeout(() => character.classList.remove('active'), 100); // Убираем класс через 100 мс
     });
 
-    // Обработка нажатия на мобильных устройствах
     character.addEventListener('touchstart', function() {
         character.classList.add('active');
     });
-    
+
     character.addEventListener('touchend', function() {
         setTimeout(() => character.classList.remove('active'), 100);
+    });
+
+    document.getElementById('upgrade-button').addEventListener('click', function() {
+        if (balance >= upgradeCost) {
+            balance -= upgradeCost;
+            coinsPerClick++;
+            document.getElementById('upgrade-info').innerText = 'Улучшение: ' + coinsPerClick + ' монет за клик';
+            document.getElementById('balance').innerText = 'Баланс: ' + balance + ' монет';
+        } else {
+            alert('Недостаточно монет для покупки улучшения!');
+        }
     });
 </script>
 
