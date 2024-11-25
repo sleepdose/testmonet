@@ -21,7 +21,7 @@
             font-size: 24px;
             margin: 0;
         }
-        #balance, #upgrade-info {
+        #balance, #energy, #upgrade-info {
             font-size: 20px;
             margin: 15px 0;
         }
@@ -33,7 +33,7 @@
         .active {
             transform: scale(0.9); /* Уменьшение при нажатии */
         }
-        #upgrade-button {
+        #upgrade-button, #open-upgrades {
             padding: 10px 20px;
             background-color: #4CAF50;
             color: white;
@@ -42,6 +42,24 @@
             cursor: pointer;
             font-size: 18px;
             margin-top: 20px;
+        }
+        #upgrade-window {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 20px;
+            z-index: 1000;
+            text-align: left;
+        }
+        #close-upgrades {
+            background-color: red;
+            border: none;
+            padding: 5px 10px;
         }
     </style>
 </head>
@@ -52,35 +70,54 @@
 </header>
 
 <div id="balance">Баланс: 0 монет</div>
+<div id="energy">Энергия: 10</div>
 <div id="upgrade-info">Улучшение: 1 монета за клик</div>
 <img id="character" src="https://img.icons8.com/emoji/480/coin-emoji.png" alt="Персонаж" />
+
+<button id="open-upgrades">Открыть улучшения</button>
+
+<div id="upgrade-window">
+    <h2>Улучшения</h2>
+    <p>Купить улучшение энергии (50 монет)</p>
+    <button id="buy-energy-upgrade">Купить</button>
+    <br><br>
+    <button id="close-upgrades">Закрыть</button>
+</div>
 
 <button id="upgrade-button">Купить улучшение (100 монет)</button>
 
 <script>
-    let balance = 0;
-    let coinsPerClick = 1;
-    const upgradeCost = 100;
+    let balance = 0;  // Текущий баланс
+    let coinsPerClick = 1;  // Монеты за клик
+    let energy = 10;  // Текущая энергия
+    const upgradeCost = 100;  // Стоимость улучшения клика
+    const energyUpgradeCost = 50; // Стоимость улучшения энергии
 
     function updateBalance() {
-        balance += coinsPerClick;
-        document.getElementById('balance').innerText = 'Баланс: ' + balance + ' монет';
+        if (energy > 0) {
+            balance += coinsPerClick;
+            energy--;  // Расход энергии на клик
+            document.getElementById('balance').innerText = 'Баланс: ' + balance + ' монет';
+            document.getElementById('energy').innerText = 'Энергия: ' + energy;
+        } else {
+            alert('Недостаточно энергии!');
+        }
     }
 
     const character = document.getElementById('character');
 
     character.addEventListener('click', function() {
         updateBalance();
-        character.classList.add('active'); // Добавляем класс активного состояния
+        character.classList.add('active');  // Добавляем класс активного состояния
         setTimeout(() => character.classList.remove('active'), 100); // Убираем класс через 100 мс
     });
 
-    character.addEventListener('touchstart', function() {
-        character.classList.add('active');
+    document.getElementById('open-upgrades').addEventListener('click', function() {
+        document.getElementById('upgrade-window').style.display = 'block';  // Открыть окно улучшений
     });
 
-    character.addEventListener('touchend', function() {
-        setTimeout(() => character.classList.remove('active'), 100);
+    document.getElementById('close-upgrades').addEventListener('click', function() {
+        document.getElementById('upgrade-window').style.display = 'none';  // Закрыть окно улучшений
     });
 
     document.getElementById('upgrade-button').addEventListener('click', function() {
@@ -93,6 +130,18 @@
             alert('Недостаточно монет для покупки улучшения!');
         }
     });
+
+    document.getElementById('buy-energy-upgrade').addEventListener('click', function() {
+        if (balance >= energyUpgradeCost) {
+            balance -= energyUpgradeCost;
+            energy += 5;  // Увеличиваем энергию
+            document.getElementById('balance').innerText = 'Баланс: ' + balance + ' монет';
+            document.getElementById('energy').innerText = 'Энергия: ' + energy;
+        } else {
+            alert('Недостаточно монет для покупки улучшения энергии!');
+        }
+    });
+
 </script>
 
 </body>
