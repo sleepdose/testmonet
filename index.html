@@ -4,36 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Создание персонажа</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="character-creation-container">
         <h1>Создание персонажа</h1>
+        <label for="name">Введите имя персонажа:</label>
+        <input type="text" id="name" placeholder="Имя персонажа" maxlength="15">
 
-        <label for="name">Имя:</label>
-        <input type="text" id="name" placeholder="Имя персонажа" required maxlength="15" pattern="[A-Za-zА-Яа-я0-9]+" title="Только буквы и цифры">
-
-        <label for="gender">Пол:</label>
-        <select id="gender" required>
-            <option value="М">Мужской</option>
-            <option value="Ж">Женский</option>
+        <label for="race">Выберите расу:</label>
+        <select id="race">
+            <option value="">Выберите</option>
+            <option value="human">Человек</option>
+            <option value="elf">Эльф</option>
+            <option value="orc">Орк</option>
         </select>
 
-        <label for="race">Раса:</label>
-        <select id="race" required>
-            <option value="человек">Человек</option>
-            <option value="эльф">Эльф</option>
-            <option value="орк">Орк</option>
+        <label for="gender">Выберите пол:</label>
+        <select id="gender">
+            <option value="">Выберите</option>
+            <option value="male">Мужской</option>
+            <option value="female">Женский</option>
         </select>
 
-        <label for="skinColor">Цвет кожи:</label>
-        <select id="skinColor" required>
-            <option value="белый">Белый</option>
-            <option value="черный">Черный</option>
-        </select>
+        <div class="character-image">
+            <img id="preview" src="" alt="Персонаж" style="display:none;" width="150">
+        </div>
 
-        <button id="createCharacter" onclick="createCharacter()">Создать персонажа</button>
+        <button onclick="createCharacter()">Создать персонажа</button>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        function updatePreview() {
+            const race = document.getElementById("race").value;
+            const gender = document.getElementById("gender").value;
+            const previewImage = document.getElementById("preview");
+            if (race && gender) {
+                previewImage.src = `images/${race}_${gender}.png`;
+                previewImage.style.display = "block";
+            } else {
+                previewImage.style.display = "none";
+            }
+        }
+
+        document.getElementById("race").addEventListener("change", updatePreview);
+        document.getElementById("gender").addEventListener("change", updatePreview);
+
+        function createCharacter() {
+            const name = document.getElementById("name").value;
+            const race = document.getElementById("race").value;
+            const gender = document.getElementById("gender").value;
+            const nameRegex = /^[a-zA-Zа-яА-ЯёЁ0-9]+$/; // Проверка на буквы и цифры
+
+            if (name && name.length <= 15 && nameRegex.test(name) && race && gender) {
+                window.location.href = `character.html?name=${encodeURIComponent(name)}&race=${race}&gender=${gender}`;
+            } else {
+                alert("Пожалуйста, введите корректное имя (макс. 15 символов, только буквы и цифры) и заполните все поля.");
+            }
+        }
+    </script>
 </body>
 </html>

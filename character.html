@@ -1,31 +1,67 @@
 <!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Информация о персонаже</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="character-info-container">
-        <h1>Информация о персонаже</h1>
-        <p id="characterDetails"></p>
-    </div>
-    <script>
-        // Получаем параметры из URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const name = urlParams.get('name');
-        const gender = urlParams.get('gender');
-        const race = urlParams.get('race');
-        const skinColor = urlParams.get('skinColor');
 
-        // Отображаем информацию о персонаже
-        document.getElementById('characterDetails').innerHTML = `
-            Имя: ${name}<br>
-            Пол: ${gender}<br>
-            Раса: ${race}<br>
-            Цвет кожи: ${skinColor}
-        `;
+<html lang="ru">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Персонаж</title>
+
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+
+<body>
+
+    <div class="character-display-container">
+
+        <h1 id="character-name">Ваш персонаж:</h1>
+
+        <div class="character-image">
+
+            <img id="character" src="" alt="Персонаж">
+
+        </div>
+
+    </div>
+
+
+
+    <script>
+
+        window.addEventListener("load", function() {
+
+            const params = new URLSearchParams(window.location.search);
+
+            const name = params.get('name');
+
+            const race = params.get('race');
+
+            const gender = params.get('gender');
+
+
+
+            if (race && gender) {
+
+                const characterImage = document.getElementById('character');
+
+                characterImage.src = `images/${race}_${gender}.png`; // Генерация пути к изображению
+
+                document.getElementById('character-name').textContent = `Ваш персонаж: ${name}`;
+
+            } else {
+
+                alert("Персонаж не был создан. Верните на страницу создания.");
+
+            }
+
+        });
+
     </script>
+
 </body>
+
 </html>
