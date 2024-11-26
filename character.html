@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Информация о персонаже</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="character-info-container">
+        <h1>Информация о персонаже</h1>
+        <p id="characterDetails"></p>
+    </div>
+    <script>
+        // Получаем параметры из URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name');
+        const gender = urlParams.get('gender');
+        const race = urlParams.get('race');
+        const skinColor = urlParams.get('skinColor');
+
+        // Отображаем информацию о персонаже
+        document.getElementById('characterDetails').innerHTML = `
+            Имя: ${name}<br>
+            Пол: ${gender}<br>
+            Раса: ${race}<br>
+            Цвет кожи: ${skinColor}
+        `;
+    </script>
+</body>
+</html>

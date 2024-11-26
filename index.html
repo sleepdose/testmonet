@@ -3,205 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мини-игра</title>
-    <style>
-        body {
-            background-color: #1a1a1a;
-            color: #ffffff;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            touch-action: manipulation; /* Запрет зуммирования */
-        }
-        #character {
-            width: 100px;
-            cursor: pointer;
-            transition: transform 0.1s ease;
-        }
-        #balance, #energy {
-            margin: 10px;
-            font-size: 24px;
-        }
-        #upgrade-window {
-            display: none;
-            background-color: rgba(50, 50, 50, 0.9);
-            border: 2px solid #444;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            z-index: 10;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%;
-            max-width: 400px;
-            min-width: 300px;
-        }
-        #click-effect {
-            position: absolute;
-            pointer-events: none;
-            font-size: 16px;
-            color: rgba(255, 255, 255, 0.7);
-            display: none;
-            transition: transform 0.5s ease, opacity 0.5s ease;
-        }
-        button {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 15px;
-            cursor: pointer;
-            margin-top: 10px;
-            font-size: 18px;
-            width: auto;
-            display: block;
-            text-align: center;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    <title>Создание персонажа</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="balance">0</div>
-    <div id="energy">1000 / 1000</div>
-    <div style="display: flex; justify-content: center; align-items: center;">
-        <img id="character" src="https://img.icons8.com/emoji/480/coin-emoji.png" alt="Персонаж" />
+    <div class="character-creation-container">
+        <h1>Создание персонажа</h1>
+
+        <label for="name">Имя:</label>
+        <input type="text" id="name" placeholder="Имя персонажа" required maxlength="15" pattern="[A-Za-zА-Яа-я0-9]+" title="Только буквы и цифры">
+
+        <label for="gender">Пол:</label>
+        <select id="gender" required>
+            <option value="М">Мужской</option>
+            <option value="Ж">Женский</option>
+        </select>
+
+        <label for="race">Раса:</label>
+        <select id="race" required>
+            <option value="человек">Человек</option>
+            <option value="эльф">Эльф</option>
+            <option value="орк">Орк</option>
+        </select>
+
+        <label for="skinColor">Цвет кожи:</label>
+        <select id="skinColor" required>
+            <option value="белый">Белый</option>
+            <option value="черный">Черный</option>
+        </select>
+
+        <button id="createCharacter" onclick="createCharacter()">Создать персонажа</button>
     </div>
-    <button id="open-upgrades">Персонаж</button>
-    <div id="upgrade-window">
-        <h2 style="text-align: center;">Бесплатный ежедневный усилитель</h2>
-        <p style="text-align: center;">Осталось: <span id="daily-uses">3 / 3</span></p>
-        <button id="use-energy">Использовать</button>
-        <h2 style="text-align: center;">Улучшения</h2>
-        <p style="text-align: center;">Доход за клик (Уровень: <span id="click-upgrade-level">1</span>) (Цена: <span id="click-upgrade-cost">100</span> монет)</p>
-        <button id="upgrade-button">Улучшить</button>
-        <p style="text-align: center;">Запас энергии (Уровень: <span id="energy-upgrade-level">1</span>) (Цена: <span id="energy-upgrade-cost">50</span> монет)</p>
-        <button id="buy-energy-upgrade">Улучшить</button>
-        <button id="close-upgrades">Закрыть</button>
-    </div>
-    <div id="click-effect">+1</div>
-    <audio id="click-sound" src="click.mp3" preload="auto"></audio>
-    <audio id="upgrade-sound" src="upgrade.mp3" preload="auto"></audio>
-    <script>
-        let balance = 0;
-        let coinsPerClick = 1;
-        let energy = 1000;
-        let maxEnergy = 1000;
-        let dailyUses = 3;
-        let clickUpgradeLevel = 1;
-        let energyUpgradeLevel = 1;
-
-        const calculateClickUpgradeCost = () => 100 * Math.pow(1.5, clickUpgradeLevel - 1);
-        const calculateEnergyUpgradeCost = () => 50 * Math.pow(1.5, energyUpgradeLevel - 1);
-
-        const updateEnergyDisplay = () => {
-            document.getElementById('energy').innerText = energy + ' / ' + maxEnergy;
-            document.getElementById('daily-uses').innerText = dailyUses + ' / 3';
-        };
-
-        const updateBalance = () => {
-            if (energy > 0) {
-                balance += coinsPerClick;
-                energy--;
-                document.getElementById('balance').innerText = balance;
-                updateEnergyDisplay();
-            } else {
-                alert('Недостаточно энергии!');
-            }
-        };
-
-        const restoreEnergy = () => {
-            if (energy < maxEnergy) {
-                energy++;
-                updateEnergyDisplay();
-            }
-        };
-
-        setInterval(restoreEnergy, 2000);
-
-        const character = document.getElementById('character');
-        character.addEventListener('click', function (event) {
-            const clickSound = document.getElementById('click-sound');
-            clickSound.play();
-            updateBalance();
-            const effect = document.getElementById('click-effect');
-            effect.style.left = `${event.clientX}px`;
-            effect.style.top = `${event.clientY}px`;
-            effect.style.display = 'block';
-            effect.style.fontSize = '16px';
-            effect.style.opacity = '1';
-            setTimeout(() => { effect.style.opacity = '0'; }, 0);
-            setTimeout(() => { effect.style.display = 'none'; }, 500);
-        });
-
-        document.getElementById('open-upgrades').addEventListener('click', function () {
-            document.getElementById('upgrade-window').style.display = 'block';
-            document.getElementById('click-upgrade-cost').innerText = calculateClickUpgradeCost();
-            document.getElementById('energy-upgrade-cost').innerText = calculateEnergyUpgradeCost();
-        });
-
-        document.getElementById('close-upgrades').addEventListener('click', function () {
-            document.getElementById('upgrade-window').style.display = 'none';
-        });
-
-        document.getElementById('upgrade-button').addEventListener('click', function () {
-            const upgradeSound = document.getElementById('upgrade-sound');
-            const clickUpgradeCost = calculateClickUpgradeCost();
-
-            if (balance >= clickUpgradeCost) {
-                upgradeSound.play();
-                balance -= clickUpgradeCost;
-                coinsPerClick++;
-                clickUpgradeLevel++;
-                document.getElementById('click-upgrade-level').innerText = clickUpgradeLevel;
-                document.getElementById('balance').innerText = balance;
-                document.getElementById('click-upgrade-cost').innerText = calculateClickUpgradeCost();
-                document.getElementById('upgrade-window').style.display = 'none';
-            } else {
-                alert('Недостаточно монет для покупки улучшения!');
-            }
-        });
-
-        document.getElementById('buy-energy-upgrade').addEventListener('click', function () {
-            const energyUpgradeCost = calculateEnergyUpgradeCost();
-
-            if (balance >= energyUpgradeCost) {
-                balance -= energyUpgradeCost;
-                maxEnergy += 100;
-                energy = Math.min(energy + 5, maxEnergy); // Обновляем уровень энергии
-                energyUpgradeLevel++;
-                document.getElementById('energy-upgrade-level').innerText = energyUpgradeLevel;
-                document.getElementById('balance').innerText = balance;
-                updateEnergyDisplay();
-                document.getElementById('energy-upgrade-cost').innerText = calculateEnergyUpgradeCost();
-                document.getElementById('upgrade-window').style.display = 'none'; // Закрытие окна
-            } else {
-                alert('Недостаточно монет для покупки улучшения энергии!');
-            }
-        });
-
-        document.getElementById('use-energy').addEventListener('click', function () {
-            if (dailyUses > 0) {
-                energy = maxEnergy;
-                dailyUses--;
-                updateEnergyDisplay();
-                document.getElementById('upgrade-window').style.display = 'none'; // Закрытие окна
-            } else {
-                alert('Нет доступных использований!');
-            }
-        });
-
-        updateEnergyDisplay();
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
